@@ -1,7 +1,7 @@
-import Test.Hspec        (Spec, it, shouldReturn)
+import Test.Hspec        (Spec, it, shouldReturn, shouldBe)
 import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
 
-import Deque (mkDeque, pop, push, shift, unshift)
+import Deque (mkDeque, pop, push, shift, unshift, toList)
 
 main :: IO ()
 main = hspecWith defaultConfig {configFastFail = True} specs
@@ -14,8 +14,12 @@ specs = do
       deque <- mkDeque
       push deque 'a'
       push deque 'b'
+      toList deque >>= print
+      False `shouldBe` True
       pop deque `shouldReturn` Just 'b'
+      toList deque >>= print
       pop deque `shouldReturn` Just 'a'
+      toList deque >>= print
 
     it "push shift" $ do
       deque <- mkDeque
