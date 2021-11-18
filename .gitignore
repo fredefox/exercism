@@ -1,4 +1,4 @@
+/.log/
 .stack-work
-dist-newstyle
-metadata.json
-dist
+TAGS
+.exercism
