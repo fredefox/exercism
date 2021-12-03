@@ -11,7 +11,7 @@ import Control.Concurrent (getNumCapabilities)
 import Data.List (nub, sort, replicate)
 
 odeAnDieFreude :: Text
-odeAnDieFreude = unlines
+odeAnDieFreude = unlines $ (>>= replicate 1024)
                  [ "Freude schöner Götterfunken"
                  , "Tochter aus Elysium,"
                  , "Wir betreten feuertrunken,"
@@ -35,6 +35,6 @@ benchGroup processors numWorkers numAnthems =
 main :: IO ()
 main = do threads <- getNumCapabilities
           let numsOfWorkers = nub $ sort [1..threads]
-              numsOfAnthems = [500]
+              numsOfAnthems = [threads]
 
           defaultMain $ benchGroup threads numsOfWorkers <$> numsOfAnthems
