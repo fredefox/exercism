@@ -14,7 +14,7 @@ executable parallel-letter-frequency
   hs-source-dirs: .
   build-depends: parallel-letter-frequency, base
   main-is: Main.hs
-  ghc-options: -threaded -with-rtsopts=-N12 -O2 -l
+  ghc-options: -threaded -eventlog "-with-rtsopts=-N -A64m -n4m -qn4" -O2
 
 library
   exposed-modules:
@@ -54,7 +54,7 @@ benchmark bench
       Paths_parallel_letter_frequency
   hs-source-dirs:
       bench
-  ghc-options: -threaded -rtsopts "-with-rtsopts=-N -A64m -n4m" -O2
+  ghc-options: -threaded -rtsopts "-with-rtsopts=-N -A64m -n4m -qn4" -O2
   build-depends:
       base
     , containers
