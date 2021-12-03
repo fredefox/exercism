@@ -20,6 +20,10 @@ of texts and returns the total frequency of each letter in the text.
 
 Check how changing number of workers affects performance of your solution by running the benchmark. Use `stack bench` to run it. Feel free to modify `bench/Benchmark.hs` to explore your solution's performance on different inputs.
 
+### Result
+
+![image info](./benchmark.png)
+
 ## Source
 
 ### Contributed to by
