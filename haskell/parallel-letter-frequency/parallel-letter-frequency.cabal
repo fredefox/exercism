@@ -13,7 +13,7 @@ library
       Frequency
   other-modules:
       Liteyear.Frequency
-      Sequential.Frequency
+      Sequential
       Paths_parallel_letter_frequency
   hs-source-dirs:
       src
