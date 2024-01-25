@@ -3,13 +3,23 @@
 Welcome to Reverse String on Exercism's Rust Track.
 If you need help running the tests or submitting your code, check out `HELP.md`.
 
+## Introduction
+
+Reversing strings (reading them from right to left, rather than from left to right) is a surprisingly common task in programming.
+
+For example, in bioinformatics, reversing the sequence of DNA or RNA strings is often important for various analyses, such as finding complementary strands or identifying palindromic sequences that have biological significance.
+
 ## Instructions
 
-Reverse a string
+Your task is to reverse a given string.
 
-For example:
-input: "cool"
-output: "looc"
+Some examples:
+
+- Turn `"stressed"` into `"desserts"`.
+- Turn `"strops"` into `"sports"`.
+- Turn `"racecar"` into `"racecar"`.
+
+## Bonus
 
 Test your function on this string: `uüu` and see what happens. Try to write a function that properly
 reverses this string. Hint: grapheme clusters
@@ -41,6 +51,7 @@ You will need to use external libraries (a `crate` in rust lingo) for the bonus 
 - @hunger
 - @lutostag
 - @ocstl
+- @PaulT89
 - @petertseng
 - @rofrol
 - @rrredface

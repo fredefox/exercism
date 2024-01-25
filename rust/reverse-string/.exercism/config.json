@@ -1,5 +1,4 @@
 {
-  "blurb": "Reverse a string",
   "authors": [
     "coriolinus"
   ],
@@ -12,6 +11,7 @@
     "hunger",
     "lutostag",
     "ocstl",
+    "PaulT89",
     "petertseng",
     "rofrol",
     "rrredface",
@@ -22,7 +22,8 @@
   ],
   "files": {
     "solution": [
-      "src/lib.rs"
+      "src/lib.rs",
+      "Cargo.toml"
     ],
     "test": [
       "tests/reverse-string.rs"
@@ -31,6 +32,7 @@
       ".meta/example.rs"
     ]
   },
+  "blurb": "Reverse a given string.",
   "source": "Introductory challenge to reverse an input string",
   "source_url": "https://medium.freecodecamp.org/how-to-reverse-a-string-in-javascript-in-3-different-ways-75e4763c68cb"
 }
