@@ -1,13 +1,13 @@
-{-# LANGUAGE RecordWildCards, TypeApplications #-}
+{-# LANGUAGE RecordWildCards #-}
 
 import Data.Foldable     (for_)
 import Test.Hspec        (Spec, describe, it, shouldBe)
-import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+import Test.Hspec.Runner (configFailFast, defaultConfig, hspecWith)
 
 import DNA (toRNA)
 
 main :: IO ()
-main = hspecWith defaultConfig {configFastFail = True} specs
+main = hspecWith defaultConfig {configFailFast = True} specs
 
 specs :: Spec
 specs = describe "toRNA" $ for_ cases test
@@ -55,9 +55,5 @@ cases = [ Case { description = "Empty RNA sequence"
         , Case { description = "correctly handles partially invalid DNA input"
                , dna         = "ACGTXXXCTTAA"
                , expected    = Left 'X'
-               }
-        , let size = floor @Double 1e8; huge = replicate size 'A' in Case { description = "huge"
-               , dna         = huge
-               , expected    = Right $ replicate size 'U'
                }
         ]

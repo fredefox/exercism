@@ -1,4 +1,3 @@
-#[derive(Debug)]
 enum List<T> {
   Nil,
   Cons { head: T, tail: Box<List<T>> }
@@ -31,13 +30,6 @@ fn index<T>(l: List<T>, n: u32) -> T {
     }
   }
 }
-
-fn from_enum(n: u32) -> List<u32> {
-  List::Cons { head: n, tail: Box::new(from_enum(n+1)) }
-}
-
 pub fn nth(n: u32) -> u32 {
-  let l = go(from_enum(2));
-  print!("{:?}", l);
-  index(l, n)
+  index(go(List::Cons { head: 2, tail: Box::new(List::Nil) }), n)
 }

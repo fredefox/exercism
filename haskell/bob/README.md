@@ -1,21 +1,38 @@
 # Bob
 
-Bob is a lackadaisical teenager. In conversation, his responses are very limited.
+Welcome to Bob on Exercism's Haskell Track.
+If you need help running the tests or submitting your code, check out `HELP.md`.
 
-Bob answers 'Sure.' if you ask him a question, such as "How are you?".
+## Introduction
 
-He answers 'Whoa, chill out!' if you YELL AT HIM (in all capitals).
+Bob is a [lackadaisical][] teenager.
+He likes to think that he's very cool.
+And he definitely doesn't get excited about things.
+That wouldn't be cool.
 
-He answers 'Calm down, I know what I'm doing!' if you yell a question at him.
+When people talk to him, his responses are pretty limited.
 
-He says 'Fine. Be that way!' if you address him without actually saying
-anything.
+[lackadaisical]: https://www.collinsdictionary.com/dictionary/english/lackadaisical
 
-He answers 'Whatever.' to anything else.
+## Instructions
 
-Bob's conversational partner is a purist when it comes to written communication and always follows normal rules regarding sentence punctuation in English.
+Your task is to determine what Bob will reply to someone when they say something to him or ask him a question.
 
-## Hints
+Bob only ever answers one of five things:
+
+- **"Sure."**
+  This is his response if you ask him a question, such as "How are you?"
+  The convention used for questions is that it ends with a question mark.
+- **"Whoa, chill out!"**
+  This is his answer if you YELL AT HIM.
+  The convention used for yelling is ALL CAPITAL LETTERS.
+- **"Calm down, I know what I'm doing!"**
+  This is what he says if you yell a question at him.
+- **"Fine. Be that way!"**
+  This is how he responds to silence.
+  The convention used for silence is nothing, or various combinations of whitespace characters.
+- **"Whatever."**
+  This is what he answers to anything else.
 
 You need to implement the `responseFor` function that returns Bob's response
 for a given input. You can use the provided signature if you are unsure
@@ -56,63 +73,30 @@ As an optional extension to this exercise, you can
 
 This part is entirely optional.
 
-
-
-## Getting Started
-
-Please refer to the [installation](https://exercism.io/tracks/haskell/installation)
-and [learning](https://exercism.io/tracks/haskell/learning) help pages.
-
-## Running the tests
-
-To run the test suite, execute the following command:
-
-```bash
-stack test
-```
-
-#### If you get an error message like this...
-
-```
-No .cabal file found in directory
-```
-
-You are probably running an old stack version and need
-to upgrade it.
-
-#### Otherwise, if you get an error message like this...
-
-```
-No compiler found, expected minor version match with...
-Try running "stack setup" to install the correct GHC...
-```
-
-Just do as it says and it will download and install
-the correct compiler version:
-
-```bash
-stack setup
-```
-
-## Running *GHCi*
-
-If you want to play with your solution in GHCi, just run the command:
-
-```bash
-stack ghci
-```
-
-## Feedback, Issues, Pull Requests
-
-The [exercism/haskell](https://github.com/exercism/haskell) repository on
-GitHub is the home for all of the Haskell exercises.
-
-If you have feedback about an exercise, or want to help implementing a new
-one, head over there and create an issue.  We'll do our best to help you!
-
 ## Source
 
-Inspired by the 'Deaf Grandma' exercise in Chris Pine's Learn to Program tutorial. [http://pine.fm/LearnToProgram/?Chapter=06](http://pine.fm/LearnToProgram/?Chapter=06)
+### Created by
 
-## Submitting Incomplete Solutions
-It's possible to submit an incomplete solution so you can see how others have completed the exercise.
+- @etrepum
+
+### Contributed to by
+
+- @austinlyons
+- @cmccandless
+- @danbst
+- @eijynagai
+- @hritchie
+- @iHiD
+- @jrib
+- @Kobata
+- @kytrinyx
+- @petertseng
+- @ppartarr
+- @rbasso
+- @sshine
+- @tejasbubane
+- @tofische
+
+### Based on
+
+Inspired by the 'Deaf Grandma' exercise in Chris Pine's Learn to Program tutorial. - https://pine.fm/LearnToProgram/?Chapter=06

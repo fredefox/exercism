@@ -1,95 +1,83 @@
 # Meetup
 
-Calculate the date of meetups.
+Welcome to Meetup on Exercism's Haskell Track.
+If you need help running the tests or submitting your code, check out `HELP.md`.
 
-Typically meetups happen on the same day of the week.  In this exercise, you
-will take a description of a meetup date, and return the actual meetup date.
+## Instructions
 
-Examples of general descriptions are:
+Recurring monthly meetups are generally scheduled on the given weekday of a given week each month.
+In this exercise you will be given the recurring schedule, along with a month and year, and then asked to find the exact date of the meetup.
 
-- The first Monday of January 2017
-- The third Tuesday of January 2017
-- The wednesteenth of January 2017
-- The last Thursday of January 2017
+For example a meetup might be scheduled on the _first Monday_ of every month.
+You might then be asked to find the date that this meetup will happen in January 2018.
+In other words, you need to determine the date of the first Monday of January 2018.
 
-The descriptors you are expected to parse are:
-first, second, third, fourth, fifth, last, monteenth, tuesteenth, wednesteenth,
-thursteenth, friteenth, saturteenth, sunteenth
+Similarly, you might be asked to find:
 
-Note that "monteenth", "tuesteenth", etc are all made up words. There was a
-meetup whose members realized that there are exactly 7 numbered days in a month
-that end in '-teenth'. Therefore, one is guaranteed that each day of the week
-(Monday, Tuesday, ...) will have exactly one date that is named with '-teenth'
-in every month.
+- the third Tuesday of August 2019 (August 20, 2019)
+- the teenth Wednesday of May 2020 (May 13, 2020)
+- the fourth Sunday of July 2021 (July 25, 2021)
+- the last Thursday of November 2022 (November 24, 2022)
 
-Given examples of a meetup dates, each containing a month, day, year, and
-descriptor calculate the date of the actual meetup.  For example, if given
-"The first Monday of January 2017", the correct meetup date is 2017/1/2.
+The descriptors you are expected to process are: `first`, `second`, `third`, `fourth`, `last`, `teenth`.
 
-## Hints
+Note that descriptor `teenth` is a made-up word.
+
+It refers to the seven numbers that end in '-teen' in English: 13, 14, 15, 16, 17, 18, and 19.
+But general descriptions of dates use ordinal numbers, e.g. the _first_ Monday, the _third_ Tuesday.
+
+For the numbers ending in '-teen', that becomes:
+
+- 13th (thirteenth)
+- 14th (fourteenth)
+- 15th (fifteenth)
+- 16th (sixteenth)
+- 17th (seventeenth)
+- 18th (eighteenth)
+- 19th (nineteenth)
+
+So there are seven numbers ending in '-teen'.
+And there are also seven weekdays (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday).
+Therefore, it is guaranteed that each day of the week (Monday, Tuesday, ...) will have exactly one numbered day ending with "teen" each month.
+
+If asked to find the teenth Saturday of August, 1953 (or, alternately the "Saturteenth" of August, 1953), we need to look at the calendar for August 1953:
+
+```plaintext
+    August 1953
+Su Mo Tu We Th Fr Sa
+                   1
+ 2  3  4  5  6  7  8
+ 9 10 11 12 13 14 15
+16 17 18 19 20 21 22
+23 24 25 26 27 28 29
+30 31
+```
+
+The Saturday that has a number ending in '-teen' is August 15, 1953.
 
 To complete this exercise, you need to implement the `meetupDay` function.
 
 You will find the type signature for `meetupDay` already in place,
 but it is up to you to define the function.
 
-
-
-## Getting Started
-
-Please refer to the [installation](https://exercism.io/tracks/haskell/installation)
-and [learning](https://exercism.io/tracks/haskell/learning) help pages.
-
-## Running the tests
-
-To run the test suite, execute the following command:
-
-```bash
-stack test
-```
-
-#### If you get an error message like this...
-
-```
-No .cabal file found in directory
-```
-
-You are probably running an old stack version and need
-to upgrade it.
-
-#### Otherwise, if you get an error message like this...
-
-```
-No compiler found, expected minor version match with...
-Try running "stack setup" to install the correct GHC...
-```
-
-Just do as it says and it will download and install
-the correct compiler version:
-
-```bash
-stack setup
-```
-
-## Running *GHCi*
-
-If you want to play with your solution in GHCi, just run the command:
-
-```bash
-stack ghci
-```
-
-## Feedback, Issues, Pull Requests
-
-The [exercism/haskell](https://github.com/exercism/haskell) repository on
-GitHub is the home for all of the Haskell exercises.
-
-If you have feedback about an exercise, or want to help implementing a new
-one, head over there and create an issue.  We'll do our best to help you!
-
 ## Source
 
-Jeremy Hinegardner mentioned a Boulder meetup that happens on the Wednesteenth of every month [https://twitter.com/copiousfreetime](https://twitter.com/copiousfreetime)
+### Created by
 
-## Submitting Incomplete Solutions
-It's possible to submit an incomplete solution so you can see how others have completed the exercise.
+- @etrepum
+
+### Contributed to by
+
+- @iHiD
+- @Insti
+- @kytrinyx
+- @navossoc
+- @petertseng
+- @ppartarr
+- @rbasso
+- @sshine
+- @tejasbubane
+
+### Based on
+
+Jeremy Hinegardner mentioned a Boulder meetup that happens on the Wednesteenth of every month - https://twitter.com/copiousfreetime

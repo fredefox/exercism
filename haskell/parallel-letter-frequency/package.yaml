@@ -10,8 +10,7 @@ library:
   exposed-modules: Frequency
   source-dirs: src
   ghc-options: -Wall
-  dependencies:
-    - parallel
+  # dependencies:
   # - foo       # List here the packages you
   # - bar       # want to use in your solution.
 
@@ -25,7 +24,7 @@ tests:
 
 benchmarks:
   bench:
-    ghc-options: "-threaded -with-rtsopts=-N -with-rtsopts=-A64m -with-rtsopts=-n4m -O2"
+    ghc-options: -threaded -with-rtsopts=-N -O2
 
     main: Benchmark.hs
     source-dirs: bench

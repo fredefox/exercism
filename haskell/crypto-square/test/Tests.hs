@@ -4,12 +4,12 @@ import Data.Char         (isSpace)
 import Data.Foldable     (for_)
 import Data.Function     (on)
 import Test.Hspec        (Spec, describe, it, shouldBe, shouldMatchList)
-import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+import Test.Hspec.Runner (configFailFast, defaultConfig, hspecWith)
 
 import CryptoSquare (encode)
 
 main :: IO ()
-main = hspecWith defaultConfig {configFastFail = True} specs
+main = hspecWith defaultConfig {configFailFast = True} specs
 
 specs :: Spec
 specs = describe "encode" $ for_ cases test
@@ -59,5 +59,3 @@ cases = [ Case { description = "empty plaintext results in an empty ciphertext"
                , expected    = "imtgdvs fearwer mayoogo anouuio ntnnlvt wttddes aohghn  sseoau "
                }
         ]
-
--- de97c99c0d129ce1af95e8986917ac3964292f42

@@ -1,90 +1,52 @@
 # Leap
 
-Given a year, report if it is a leap year.
+Welcome to Leap on Exercism's Haskell Track.
+If you need help running the tests or submitting your code, check out `HELP.md`.
 
-The tricky thing here is that a leap year in the Gregorian calendar occurs:
+## Introduction
 
-```text
-on every year that is evenly divisible by 4
-  except every year that is evenly divisible by 100
-    unless the year is also evenly divisible by 400
-```
+A leap year (in the Gregorian calendar) occurs:
 
-For example, 1997 is not a leap year, but 1996 is.  1900 is not a leap
-year, but 2000 is.
+- In every year that is evenly divisible by 4.
+- Unless the year is evenly divisible by 100, in which case it's only a leap year if the year is also evenly divisible by 400.
 
-## Notes
+Some examples:
 
-Though our exercise adopts some very simple rules, there is more to
-learn!
+- 1997 was not a leap year as it's not divisible by 4.
+- 1900 was not a leap year as it's not divisible by 400.
+- 2000 was a leap year!
 
-For a delightful, four minute explanation of the whole leap year
-phenomenon, go watch [this youtube video][video].
+~~~~exercism/note
+For a delightful, four-minute explanation of the whole phenomenon of leap years, check out [this YouTube video](https://www.youtube.com/watch?v=xX96xng7sAE).
+~~~~
 
-[video]: http://www.youtube.com/watch?v=xX96xng7sAE
+## Instructions
 
-## Hints
+Your task is to determine whether a given year is a leap year.
 
 To complete this exercise you need to implement the function `isLeapYear`
 that takes a year and determines whether it is a leap year.
 
-
-
-## Getting Started
-
-Please refer to the [installation](https://exercism.io/tracks/haskell/installation)
-and [learning](https://exercism.io/tracks/haskell/learning) help pages.
-
-## Running the tests
-
-To run the test suite, execute the following command:
-
-```bash
-stack test
-```
-
-#### If you get an error message like this...
-
-```
-No .cabal file found in directory
-```
-
-You are probably running an old stack version and need
-to upgrade it.
-
-#### Otherwise, if you get an error message like this...
-
-```
-No compiler found, expected minor version match with...
-Try running "stack setup" to install the correct GHC...
-```
-
-Just do as it says and it will download and install
-the correct compiler version:
-
-```bash
-stack setup
-```
-
-## Running *GHCi*
-
-If you want to play with your solution in GHCi, just run the command:
-
-```bash
-stack ghci
-```
-
-## Feedback, Issues, Pull Requests
-
-The [exercism/haskell](https://github.com/exercism/haskell) repository on
-GitHub is the home for all of the Haskell exercises.
-
-If you have feedback about an exercise, or want to help implementing a new
-one, head over there and create an issue.  We'll do our best to help you!
-
 ## Source
 
-JavaRanch Cattle Drive, exercise 3 [http://www.javaranch.com/leap.jsp](http://www.javaranch.com/leap.jsp)
+### Created by
 
-## Submitting Incomplete Solutions
-It's possible to submit an incomplete solution so you can see how others have completed the exercise.
+- @etrepum
+
+### Contributed to by
+
+- @iHiD
+- @karen-pal
+- @kytrinyx
+- @navossoc
+- @paulrex
+- @petertseng
+- @ppartarr
+- @rbasso
+- @sshine
+- @tejasbubane
+- @tofische
+
+### Based on
+
+CodeRanch Cattle Drive, Assignment 3 - https://coderanch.com/t/718816/Leap

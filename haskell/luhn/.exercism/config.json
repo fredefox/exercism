@@ -1,5 +1,4 @@
 {
-  "blurb": "Given a number determine whether or not it is valid per the Luhn formula.",
   "authors": [
     "etrepum"
   ],
@@ -20,15 +19,20 @@
   ],
   "files": {
     "solution": [
-      "src/Luhn.hs"
+      "src/Luhn.hs",
+      "package.yaml"
     ],
     "test": [
       "test/Tests.hs"
     ],
     "example": [
-      "examples/success-standard/src/Luhn.hs"
+      ".meta/examples/success-standard/src/Luhn.hs"
+    ],
+    "invalidator": [
+      "stack.yaml"
     ]
   },
+  "blurb": "Given a number determine whether or not it is valid per the Luhn formula.",
   "source": "The Luhn Algorithm on Wikipedia",
-  "source_url": "http://en.wikipedia.org/wiki/Luhn_algorithm"
+  "source_url": "https://en.wikipedia.org/wiki/Luhn_algorithm"
 }
