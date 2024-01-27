@@ -7,13 +7,15 @@ import Control.Monad
 import qualified Data.List as List
 import Data.Maybe (listToMaybe)
 
+import qualified Dom
+
+chain :: [Dom] -> Maybe [Dom]
+chain = Dom.chain
+
 type Dom = (Int, Int)
 
 match :: Dom -> Dom -> Bool
 (_, a) `match` (b, _) = a == b
-
-chain :: [Dom] -> Maybe [Dom]
-chain = listToMaybe . solve
 
 solve :: [Dom] -> [[Dom]]
 solve xs
