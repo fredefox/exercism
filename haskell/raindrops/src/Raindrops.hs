@@ -1,31 +1,33 @@
 {-# language ExplicitForAll #-}
 {-# language ScopedTypeVariables #-}
-module Raindrops (convert) where
+{-# language ViewPatterns #-}
+module Raindrops (convert, primes) where
 
 import qualified Data.List.NonEmpty as NonEmpty
 import qualified Data.List as List
 import Data.Maybe
 
-convert :: Int -> String
+convert :: forall n . Integral n => Show n => n -> String
 convert n
-  | null $ [3, 5, 7] `List.intersect` ns = show n
-  | otherwise = foldMap go ns
+  | null $ [3, 5, 7] `List.intersect` ps = show n
+  | otherwise = foldMap go ps
   where
-  go :: Int -> String
-  go = fromMaybe mempty . (`lookup` m)
-  m :: [(Int, String)]
+  go :: n -> String
+  go = fromMaybe "" . (`lookup` m)
+  m :: [(n, String)]
   m = [(3, "Pling"), (5, "Plang"), (7, "Plong")]
-  ns = distinctFactors n
+  ps = distinctFactorsWhile (<= 7) n
 
-distinctFactors :: Integral a => a -> [a]
-distinctFactors = distinct . factors
+distinctFactorsWhile :: Integral a => Show a => (a -> Bool) -> a -> [a]
+distinctFactorsWhile q = distinct . factorsWhile q
 
-factors :: forall n . Integral n => n -> [n]
-factors = go primes
+factorsWhile :: forall n . Integral n => Show n => (n -> Bool) -> n -> [n]
+factorsWhile q = go primes
   where
   go :: [n] -> n -> [n]
   go ps@(p:pss) n
     | n <= 1 = []
+    | not (q p) = []
     | n `mod` p == 0 = p : go ps (n `div` p)
     | otherwise = go pss n
   go _ _ = error "IMPOSSIBLE"
