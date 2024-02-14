@@ -3,13 +3,13 @@
 import Data.Map          (empty, fromList, lookup, singleton)
 import Data.Text         (concat)
 import Test.Hspec        (Spec, describe, it, shouldBe)
-import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+import Test.Hspec.Runner (configFailFast, defaultConfig, hspecWith)
 import Prelude    hiding (concat, lookup)
 
 import Frequency (frequency)
 
 main :: IO ()
-main = hspecWith defaultConfig {configFastFail = True} specs
+main = hspecWith defaultConfig {configFailFast = True} specs
 
 specs :: Spec
 specs = do
@@ -80,5 +80,3 @@ specs = do
       it "all three anthems, together, 1 worker" $ testAllAnthems 1
 
       it "all three anthems, together, 4 workers" $ testAllAnthems 4
-
--- bf248231bf3560f0fd7e2901557463dad09a58aa

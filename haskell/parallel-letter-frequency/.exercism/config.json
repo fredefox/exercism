@@ -1,5 +1,4 @@
 {
-  "blurb": "Count the frequency of letters in texts using parallel computation.",
   "authors": [],
   "contributors": [
     "iHiD",
@@ -13,13 +12,18 @@
   ],
   "files": {
     "solution": [
-      "src/Frequency.hs"
+      "src/Frequency.hs",
+      "package.yaml"
     ],
     "test": [
       "test/Tests.hs"
     ],
     "example": [
       ".meta/examples/success-standard/src/Frequency.hs"
+    ],
+    "invalidator": [
+      "stack.yaml"
     ]
-  }
+  },
+  "blurb": "Count the frequency of letters in texts using parallel computation."
 }
