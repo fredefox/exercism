@@ -10,10 +10,19 @@ import Control.Applicative
 import Control.Monad
 
 fromPOV :: Eq a => a -> Tree a -> Maybe (Tree a)
-fromPOV a = invert id (== a)
+fromPOV a = invert (== a)
 
-invert :: forall f a . Alternative f => (Forest a -> Forest a) -> (a -> Bool) -> Tree a -> f (Tree a)
-invert k p (Node x xs) = here <|> there
+invert
+  :: forall f a
+  . Alternative f
+  => (a -> Bool) -> Tree a -> f (Tree a)
+invert = invertTree id
+
+invertTree
+  :: forall f a
+  . Alternative f
+  => (Forest a -> Forest a) -> (a -> Bool) -> Tree a -> f (Tree a)
+invertTree k p (Node x xs) = here <|> there
   where
   here :: f (Tree a)
   here = t <$ guard (p x)
@@ -24,19 +33,26 @@ invert k p (Node x xs) = here <|> there
   k' :: Forest a -> Forest a
   k' = pure . Node x . k
 
-invertForest :: forall f a . Alternative f => (Forest a -> Forest a) -> (a -> Bool) -> Forest a -> f (Tree a)
+invertForest
+  :: forall f a
+  . Alternative f
+  => (Forest a -> Forest a) -> (a -> Bool) -> Forest a -> f (Tree a)
 invertForest _ _ [] = empty
-invertForest k a (x:xs) = invert k' a x <|> invertForest k'' a xs
+invertForest k p (x:xs) = invertTree k' p x <|> invertForest k'' p xs
   where
   k' :: Forest a -> Forest a
   k' = (<> k xs)
   k'' :: Forest a -> Forest a
   k'' = k . (x:)
 
-path :: forall f a . Alternative f => Eq a => a -> Tree a -> f [a]
-path a (Node x xs)
-  | a == x = pure [a]
-  | otherwise = fmap (x:) $ asum $ path @f a <$> xs
+path :: forall f a . Alternative f => (a -> Bool) -> Tree a -> f [a]
+path p (Node x xs) = here <|> there
+  where
+  here = [x] <$ guard (p x)
+  there = fmap (x:) $ asum $ path p <$> xs
+
+trace :: Alternative f => Monad f => (a -> Bool) -> (a -> Bool) -> Tree a -> f [a]
+trace p q t = invert p t >>= path q
 
 tracePathBetween :: Eq a => a -> a -> Tree a -> Maybe [a]
-tracePathBetween a b t = fromPOV a t >>= path b
+tracePathBetween a b = trace (== a) (== b)
