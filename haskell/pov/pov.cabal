@@ -29,7 +29,8 @@ test-suite test
   hs-source-dirs:
       test
   build-depends:
-      base
+      QuickCheck
+    , base
     , containers
     , hspec
     , pov

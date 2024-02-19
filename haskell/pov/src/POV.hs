@@ -3,7 +3,7 @@
 {-# language LambdaCase #-}
 {-# language ScopedTypeVariables #-}
 {-# language TypeApplications #-}
-module POV (fromPOV, tracePathBetween) where
+module POV (fromPOV, tracePathBetween, invert, trace, path) where
 
 import Data.Tree (Tree(Node), Forest)
 import Control.Applicative
@@ -13,8 +13,7 @@ fromPOV :: Eq a => a -> Tree a -> Maybe (Tree a)
 fromPOV a = invert (== a)
 
 invert
-  :: forall f a
-  . Alternative f
+  :: Alternative f
   => (a -> Bool) -> Tree a -> f (Tree a)
 invert = invertTree id
 

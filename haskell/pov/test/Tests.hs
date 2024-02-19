@@ -1,24 +1,35 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE PartialTypeSignatures #-}
-{-# options_ghc -Wno-all #-}
+{-# LANGUAGE TypeApplications #-}
+-- {-# options_ghc -Wno-partial-type-signatures #-}
 import Data.Foldable     (for_)
 import Data.Function     (on)
-import Data.Tree         (Tree(Node), rootLabel)
+import Data.Tree         (Tree(Node), Forest, rootLabel)
 import Data.List         (sort)
 import Test.Hspec        (Spec, describe, it, shouldBe)
+import qualified Test.Hspec as Hspec
 import Test.Hspec.Runner (configFailFast, defaultConfig, hspecWith)
 import GHC.Stack (HasCallStack)
+import Test.QuickCheck ((==>))
+import qualified Test.QuickCheck as QuickCheck
+import Data.Word (Word8)
+import Control.Applicative
+import Data.Tree
+import Control.Monad
+import System.Exit
 
-import POV (fromPOV, tracePathBetween)
+import qualified POV
 
 main :: IO ()
 main = hspecWith defaultConfig {configFailFast = True} specs
+
+edgesShouldMatch :: HasCallStack => Functor f => Ord a => Eq (f [(a, a)]) => Show (f [(a, a)]) => f (Tree a) -> f (Tree a) -> Hspec.Expectation
+edgesShouldMatch = shouldBe `on` fmap (sort . toEdges)
 
 specs :: Spec
 specs = do
 
     describe "fromPOV" $ do
-
       let cases =
             [ ("reparenting singleton"        , singleton , Just singleton')
             , ("reparenting with sibling"     , simple    , Just simple'   )
@@ -29,13 +40,11 @@ specs = do
             , ("from POV of non-existent node", leaf "foo", Nothing        ) ]
 
           rootShouldMatch  = shouldBe `on` fmap rootLabel
-          edgesShouldMatch :: HasCallStack => Ord a => Show a => Maybe (Tree a) -> Maybe (Tree a) -> _
-          edgesShouldMatch = shouldBe `on` fmap (sort . toEdges)
 
-          test :: HasCallStack => _
+          test :: HasCallStack => (String, Tree String, Maybe (Tree String)) -> Hspec.SpecWith ()
           test (name, input, output) = describe name $ do
-            it "correct root"  $ fromPOV "x" input `rootShouldMatch`  output
-            it "correct edges" $ fromPOV "x" input `edgesShouldMatch` output
+            it "correct root"  $ POV.fromPOV "x" input `rootShouldMatch`  output
+            it "correct edges" $ POV.fromPOV "x" input `edgesShouldMatch` output
 
           in for_ cases test
 
@@ -47,25 +56,27 @@ specs = do
                     , ("nested"   , nested   )
                     , ("cousins"  , cousins  ) ]
 
-            test (name, g) = it name $ fromPOV "NOT THERE" g `shouldBe` Nothing
+            test (name, g) = it name $ POV.fromPOV "NOT THERE" g `shouldBe` Nothing
 
             in for_ cases test
+
+      properties
 
     describe "tracePathBetween" $ do
 
       it "Can find path from x -> parent" $
-        tracePathBetween "x" "parent" simple
+        POV.tracePathBetween "x" "parent" simple
         `shouldBe` Just [ "x"
                         , "parent" ]
 
       it "Can find path from x -> sibling" $
-        tracePathBetween "x" "b" flat
+        POV.tracePathBetween "x" "b" flat
         `shouldBe` Just [ "x"
                         , "root"
                         , "b"    ]
 
       it "Can trace a path from x -> cousin" $
-        tracePathBetween "x" "cousin-1" cousins
+        POV.tracePathBetween "x" "cousin-1" cousins
         `shouldBe` Just [ "x"
                         , "parent"
                         , "grandparent"
@@ -73,24 +84,71 @@ specs = do
                         , "cousin-1"    ]
 
       it "Can find path from nodes other than x" $
-        tracePathBetween "a" "c" flat
+        POV.tracePathBetween "a" "c" flat
         `shouldBe` Just [ "a"
                         , "root"
                         , "c"    ]
 
       it "Can find path not involving root" $
-        tracePathBetween "x" "sibling-1" rootNotNeeded
+        POV.tracePathBetween "x" "sibling-1" rootNotNeeded
         `shouldBe` Just [ "x"
                         , "parent"
                         , "sibling-1" ]
 
       it "Cannot trace if destination does not exist" $
-        tracePathBetween "x" "NOT THERE" cousins
+        POV.tracePathBetween "x" "NOT THERE" cousins
         `shouldBe` Nothing
 
       it "Cannot trace if source does not exist" $
-        tracePathBetween "NOT THERE" "x" cousins
+        POV.tracePathBetween "NOT THERE" "x" cousins
         `shouldBe` Nothing
+
+
+properties :: Hspec.SpecWith ()
+properties = describe "properties" $ do
+  it "prop_id" $ QuickCheck.property prop_id
+  it "prop_preserve_size" $ QuickCheck.property prop_empty
+  it "prop_empty" $ QuickCheck.property prop_empty
+  it "prop_empty" prop_preserves_nodes
+  it "prop_missing" prop_missing
+
+-- x \in f (x)
+prop_id :: Tree Word8 -> Hspec.Expectation
+prop_id t = POV.invert (const True) t `Hspec.shouldContain` [t]
+
+prop_preserve_size :: Tree () -> Hspec.Expectation
+prop_preserve_size t = guard $ all @[] ((== n) . length) $ POV.invert (const True) t
+  where
+  n = length t
+
+prop_preserves_nodes :: QuickCheck.Property
+prop_preserves_nodes = QuickCheck.forAllShow QuickCheck.arbitrary (const "_ :: Word8 -> Bool") prop
+  where
+  prop :: (Word8 -> Bool) -> Tree Word8 -> Hspec.Expectation
+  prop p t = POV.invert @[] (const False) t `for_` (\t' -> t' `nodesShouldMatch'` t)
+  nodesShouldMatch' = shouldBe `on` (sort . flatten)
+    -- `Hspec.shouldContain` [_]
+
+prop_missing :: QuickCheck.Property
+prop_missing = QuickCheck.forAllShow QuickCheck.arbitrary (const "_ :: Word8 -> Bool") prop
+  where
+  prop :: Tree Word8 -> QuickCheck.Property
+  prop t = all (/= n) t ==> (POV.invert (== n) t `shouldBe` Nothing)
+    where
+    m = maximum t
+    n = if m == maxBound then minBound else succ m
+
+-- invert (\_ -> False) x = []
+prop_empty :: Tree Word8 -> Hspec.Expectation
+prop_empty t = POV.invert (const False) t `Hspec.shouldBe` []
+
+tree :: Alternative f => [a] -> Int -> f (Tree a)
+tree _ 0 = empty
+tree xs n = case splitAt n' xs of
+  (_, []) -> empty
+  (l, r@(x:_)) -> pure $ Node x (tree l n' <> tree r n')
+  where
+  n' = n `div` 2
 
 -- Functions used in the tests.
 
