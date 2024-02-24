@@ -1,103 +1,129 @@
 {-# language StandaloneDeriving #-}
 {-# language DerivingStrategies #-}
 {-# language LambdaCase #-}
+{-# language MultiWayIf #-}
+{-# language TupleSections #-}
 {-# options_ghc -Wall #-}
-module Bowling (score, BowlingError(..), frames, Frame) where
+module Bowling (score, BowlingError(..)) where
 
+import Data.Array (Array, Ix)
+import qualified Data.Array as Array
+import Control.Monad.State
+import Control.Monad.Reader
+import Control.Monad.Except
+import Control.Monad
 
-data BowlingError = IncompleteGame
-                  | InvalidRoll { rollIndex :: Int, rollValue :: Int }
+data BowlingError
+  = IncompleteGame
+  | InvalidRoll { rollIndex :: Int, rollValue :: Int }
   deriving (Eq, Show)
 
 score :: [Int] -> Either BowlingError Int
-score xs = do
-  q <- frames' xs
-  pure $ sum $ solve q
+score xs = run xs eval
 
--- parse :: [Int] -> Either BowlingError ([Frame], [Int])
--- parse xs = case filter _ $ zip [0..] xs of
---   [] -> pure $ frames xs
---   (x:_) -> Left $ _ x
+type Eval a = ExceptT BowlingError (ReaderT (Array Int Int) (State (Int, Int))) a
 
 data Frame = Strike | Spare Int | Open Int Int
 
 deriving stock instance Show Frame
 
-frames' :: [Int] -> Either BowlingError ([Frame], [Int])
-frames' xs0 = do
-  (a, b') <- go 0 10 xs0 []
-  let b = take 2 b'
-  case filter (\x -> x < 0 || x > 10) b of
-    [] -> pure (reverse a, b)
-    (x:_) -> Left $ InvalidRoll (-1) x
-  where
-  go :: Int -> Int -> [Int] -> [Frame] -> Either BowlingError ([Frame], [Int])
-  go _idx 0 xs acc = pure (acc, xs)
-  go _idx _n [] _acc = Left IncompleteGame
-  go idx _n (x0:_) _acc | x0 < 0 || x0 > 10 = Left $ InvalidRoll idx x0
-  go idx n (x0:xs) acc
-    | x0 == 10 = go (succ idx) (pred n) xs (Strike : acc)
-  go idx n (x0:x1:xs) acc
-    | x0 + x1 > 10 = Left $ InvalidRoll (succ idx) x1
-    | x0 + x1 == 10 = go (idx + 2) (pred n) xs (Spare x0 : acc)
-    | otherwise = go (idx + 2) (pred n) xs (Open x0 x1 : acc)
-  go _idx _n [_] _acc = undefined
+getIndex :: Eval Int
+getIndex = gets fst
 
-frames :: [Int] -> ([Frame], [Int])
-frames xs0 = (reverse a, b)
-  where
-  (a, b) = go 10 xs0 []
-  go :: Int -> [Int] -> [Frame] -> ([Frame], [Int])
-  go 0 xs acc = (acc, xs)
-  go _n [] acc = (acc, [])
-  go n (x0:xs) acc
-    | x0 == 10 = go (pred n) xs (Strike : acc)
-  go n (x0:x1:xs) acc
-    | x0 + x1 == 10 = go (pred n) xs (Spare x0 : acc)
-    | otherwise = go (pred n) xs (Open x0 x1 : acc)
-  go _n [_] _acc = undefined
+incrIndex :: Eval ()
+incrIndex = modify (\(a, b) -> (succ a, b))
 
-solve :: ([Frame], [Int]) -> [Int]
-solve (qs0, fill) = go qs0
-  where
-  go :: [Frame] -> [Int]
-  go = \case
-    [] -> []
-    (q:qs) -> sc q qs fill : go qs
--- solve ([], _) = []
--- solve ((q:qs), fill) = sc q qs fill : solve qs
+getFrameIx :: Eval Int
+getFrameIx = gets snd
 
-sc :: Frame -> [Frame] -> [Int] -> Int
-sc q qs fill = case q of
-  Strike -> 10 + two qs fill
-  Spare _ -> 10 + one qs fill
-  Open x0 x1 -> x0 + x1
--- sc q qs = case q of
---   Strike -> 10 + case qs of
---     [] -> error "Is this possible?"
---     (Strike:qss) -> sc Strike qss
---     (Spare _:_) -> 10
---     (Open x0 x1:_) -> x0 + x1
---     (Extra _x0:_) -> error "I don't understand this case"
---   Spare _ -> 10 + case qs of
---     [] -> error "Is this possible?"
---     (Strike:_) -> error "I don't understand this case"
---     (Spare x1:_) -> x1
---     (Open x1 _:_) -> x1
---     (Extra x1:_) -> x1
---   Open x0 x1 -> x0 + x1
---   Extra{} -> 0
+incrFrameIx :: Eval ()
+incrFrameIx = modify (\(a, b) -> (a, succ b))
+
+invalidThrow :: Int -> Int -> Eval a
+invalidThrow ix w = do
+  throwError $ InvalidRoll ix w
+
+returnThrow :: Int -> Int -> Eval Int
+returnThrow ix w
+  | w < 0 || w > 10 = invalidThrow ix w
+  | otherwise = pure w
+
+lookupV :: Array Int Int -> Int -> Eval Int
+lookupV a n = case a !? n of
+    Nothing -> throwError IncompleteGame
+    Just w -> returnThrow n w
+
+getNextThrow :: Eval (Int, Int)
+getNextThrow = do
+  ix <- getIndex
+  incrIndex
+  a <- ask
+  (,ix) <$> lookupV a ix
+
+peekThrow :: Int -> Eval Int
+peekThrow d = do
+  n <- getIndex
+  a <- ask
+  lookupV a (n + d)
+
+(!?) :: Ix ix => Array ix e -> ix -> Maybe e
+a !? ix
+  | ix `inBounds` a = pure $ a Array.! ix
+  | otherwise = Nothing
+
+inBounds :: Ix ix => ix -> Array ix e -> Bool
+ix `inBounds` a = Array.bounds a `Array.inRange` ix
+
+getNextFrame :: Eval Frame
+getNextFrame = do
+  (n, _) <- getNextThrow
+  incrFrameIx
+  if n == 10
+  then pure Strike
+  else do
+    (m, ix) <- getNextThrow
+    if
+      | n + m > 10 -> invalidThrow ix m
+      | n + m == 10 -> pure $ Spare n
+      | otherwise -> pure $ Open n m
+
+eval :: Eval Int
+eval = do
+  f <- getNextFrame
+  w <- scoreFrame f
+  n <- getFrameIx
+  (w +) <$> if n < 10
+  then eval
+  else 0 <$ ensureFinal
+
+-- tryError :: MonadError e m => m a -> m (Either e a)
+-- tryError m = m' `catchError` h
+--   where
+--   m' = Right <$> m
+--   h = pure . Left
+
+ensureFinal :: Eval ()
+ensureFinal = do
+  m <- tryError getNextThrow
+  case m of
+    Left{} -> pure ()
+    Right (w, ix) -> invalidThrow ix w
   
-two :: [Frame] -> [Int] -> Int
-two [] fill = sum $ take 2 fill
-two (q:qs) fill = case q of
-  Strike -> 10 + one qs fill
-  Spare{} -> 10
-  Open x0 x1 -> x0 + x1
+scoreFrame :: Frame -> Eval Int
+scoreFrame = \case
+  Strike -> do
+    x0 <- peekThrow 0
+    x1 <- peekThrow 1
+    ix <- getIndex
+    when (x0 /= 10 && x0 + x1 > 10) $ invalidThrow (succ ix) x1
+    pure $ sum [10, x0, x1]
+  Spare{} -> do
+    x0 <- peekThrow 0
+    pure $ 10 + x0
+  Open x0 x1 -> pure $ x0 + x1
 
-one :: [Frame] -> [Int] -> Int
-one [] fill = head fill
-one (q:_) _ = case q of
-  Strike -> 10
-  Spare x -> x
-  Open x _ -> x
+run :: [Int] -> Eval a -> Either BowlingError a
+run xs = (`evalState` (0,0)) . (`runReaderT` listArray xs) . runExceptT
+
+listArray :: [a] -> Array Int a
+listArray xs = Array.listArray (0, pred $ length xs) xs
