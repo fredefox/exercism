@@ -32,12 +32,42 @@ cases =
     , Case { description = "Tree with one item"
            , preorder    = "a"
            , inorder     = "a"
-           , expected    = Just (Branch Leaf 'a' Leaf)
+           , expected    = Just (pure 'a')
            }
-    , Case { description = "Tree with two item"
+    , Case { description = "Tree with two items (left)"
            , preorder    = "ab"
            , inorder     = "ba"
-           , expected    = Just (Branch (Branch Leaf 'b' Leaf) 'a' Leaf)
+           , expected    = Just (Branch (pure 'b') 'a' Leaf)
+           }
+    , Case { description = "Tree with two items (right)"
+           , preorder    = "ab"
+           , inorder     = "ab"
+           , expected    = Just (Branch Leaf 'a' (pure 'b'))
+           }
+    , Case { description = "Tree with three items (left-left)"
+           , preorder    = "abc"
+           , inorder     = "cba"
+           , expected    = Just (Branch (Branch (pure 'c') 'b' Leaf) 'a' Leaf )
+           }
+    , Case { description = "Tree with three items (left-right)"
+           , preorder    = "abc"
+           , inorder     = "bca"
+           , expected    = Just (Branch (Branch Leaf 'b' (pure 'c')) 'a' Leaf )
+           }
+    , Case { description = "Tree with three items (center)"
+           , preorder    = "abc"
+           , inorder     = "bac"
+           , expected    = Just (Branch (pure 'b') 'a' (pure 'c') )
+           }
+    , Case { description = "Tree with three items (right-left)"
+           , preorder    = "abc"
+           , inorder     = "acb"
+           , expected    = Just (Branch Leaf 'a' (Branch (pure 'c') 'b' Leaf) )
+           }
+    , Case { description = "Tree with three items (right-right)"
+           , preorder    = "abc"
+           , inorder     = "abc"
+           , expected    = Just (Branch Leaf 'a' (Branch Leaf 'b' (pure 'c')))
            }
     , Case { description = "Tree with many items"
            , preorder    = "aixfr"
