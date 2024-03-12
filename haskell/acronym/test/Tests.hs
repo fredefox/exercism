@@ -5,6 +5,9 @@ import Data.Foldable     (for_)
 import Data.String       (fromString)
 import Test.Hspec        (Spec, describe, it, shouldBe)
 import Test.Hspec.Runner (configFailFast, defaultConfig, hspecWith)
+import Test.QuickCheck (Property, (===), Gen)
+import qualified Test.QuickCheck as QuickCheck
+import Control.Applicative
 
 import Acronym (abbreviate)
 
@@ -12,7 +15,9 @@ main :: IO ()
 main = hspecWith defaultConfig {configFailFast = True} specs
 
 specs :: Spec
-specs = describe "abbreviate" $ for_ cases test
+specs = do
+  describe "abbreviate" $ for_ cases test
+  describe "abbreviate property tests" propCamelCase
   where
     test Case {..} = it description $
       abbreviate (fromString input) `shouldBe` fromString expected
@@ -67,3 +72,22 @@ cases = [ Case { description = "basic"
                , expected    = "TRNT"
                }
         ]
+
+propCamelCase :: Spec
+propCamelCase
+  = it "handles camel-case"
+  $ QuickCheck.property
+  $ QuickCheck.forAllShrink g s
+  $ \xs -> fmap head xs === abbreviate (concat xs)
+  where
+  g :: Gen [String]
+  g = QuickCheck.listOf words
+  words = (:) <$> upperCase <*> QuickCheck.listOf1 lowerCase
+  lowerCase = QuickCheck.elements ['a'..'z']
+  upperCase = QuickCheck.elements ['A'..'Z']
+  s :: [String] -> [[String]]
+  s [] = []
+  s (x:xs) = pure xs <|> QuickCheck.shrinkList s1 xs
+  s1 :: String -> [String]
+  s1 (c:_:xs@(_:_)) = pure (c:xs)
+  s1 _ = empty
